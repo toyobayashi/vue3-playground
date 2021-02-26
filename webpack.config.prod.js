@@ -44,7 +44,8 @@ const webConfig = {
       dynamicImport: false,
       forOf: false,
       module: false
-    }
+    },
+    devtoolModuleFilenameTemplate: 'ty:///[resource-path]?[hash]'
   },
   node: false,
   module: {

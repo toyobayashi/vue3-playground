@@ -43,7 +43,8 @@ const webConfig = {
       forOf: false,
       module: false
     },
-    publicPath: '/'
+    publicPath: '/',
+    devtoolModuleFilenameTemplate: 'ty:///[resource-path]?[hash]'
   },
   node: false,
   module: {
