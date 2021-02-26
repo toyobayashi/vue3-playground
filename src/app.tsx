@@ -1,7 +1,5 @@
 import {
-  defineComponent/* ,
-  h,
-  Fragment */
+  defineComponent
 } from 'vue'
 
 import { useTextInput } from './hooks'
@@ -12,7 +10,7 @@ export default defineComponent({
     const {
       inputValue,
       log
-    } = useTextInput()
+    } = useTextInput('JSX')
     return () => {
       console.log('App render')
       return (<>

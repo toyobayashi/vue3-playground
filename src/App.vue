@@ -10,7 +10,7 @@ import { useTextInput } from './hooks'
 export default defineComponent({
   name: 'App',
   setup () {
-    const { inputValue, log } = useTextInput()
+    const { inputValue, log } = useTextInput('SFC')
     return { inputValue, log }
   }
 })
