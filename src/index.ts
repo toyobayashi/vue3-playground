@@ -1,6 +1,6 @@
 import { createApp, h } from 'vue'
-import App from './App.vue'
-// import App from './app'
+// import App from './App.vue'
+import App from './app'
 
 const app = createApp({
   render: () => h(App)
