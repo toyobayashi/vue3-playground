@@ -12,7 +12,7 @@
 // _useLess: false
 // _useTypeScript: true
 // _useESLint: false
-// _useBabel: false
+// _useBabel: true
 // _usePostCss: false
 const path = require('path')
 const webpack = require('webpack')
@@ -50,6 +50,13 @@ const webConfig = {
   module: {
     rules: [
       {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        use: [
+          path.join(context, 'node_modules/babel-loader/lib/index.js')
+        ]
+      },
+      {
         test: /\.ts$/,
         exclude: /node_modules/,
         use: [
@@ -69,6 +76,9 @@ const webConfig = {
         test: /\.tsx$/,
         exclude: /node_modules/,
         use: [
+          {
+            loader: require.resolve('babel-loader')
+          },
           {
             loader: require.resolve('ts-loader'),
             options: {
@@ -181,6 +191,7 @@ const webConfig = {
       '.mjs',
       '.cjs',
       '.js',
+      '.jsx',
       '.vue',
       '.css',
       '.json',
