@@ -1,4 +1,4 @@
-import * as ty from '@tybys/ty'
+import type { Configuration } from '@tybys/ty'
 
 export default {
   configureWebpack: {
@@ -19,4 +19,4 @@ export default {
   loaderPath: {
     vueLoader: require.resolve('vue-loader') // vue-loader@next
   }
-} as ty.Configuration
+} as Configuration

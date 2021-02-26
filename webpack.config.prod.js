@@ -1,4 +1,4 @@
-// @tybys/ty version 0.16.1
+// @tybys/ty version 0.16.3
 // https://github.com/toyobayashi/ty
 
 // _useVue: true
@@ -54,7 +54,9 @@ const webConfig = {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         use: [
-          path.join(context, 'node_modules/babel-loader/lib/index.js')
+          {
+            loader: require.resolve('babel-loader')
+          }
         ]
       },
       {
@@ -210,6 +212,7 @@ const webConfig = {
     new HtmlWebpackPlugin({
       title: 'vue3-playground',
       template: path.join(context, 'public/index.html'),
+      filename: 'index.html',
       minify: {
         removeComments: true,
         collapseWhitespace: true,
