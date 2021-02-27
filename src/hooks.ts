@@ -5,7 +5,8 @@ export function useTextInput (defaultValue?: string) {
   const inputValue = ref(defaultValue ?? '')
   const log = () => {
     console.log(inputValue.value)
-    store.commit('COUNT')
+    // store.commit('COUNT')
+    store.add()
   }
 
   return {

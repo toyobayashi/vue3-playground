@@ -14,7 +14,7 @@ interface RouterViewDefaultSlotScope {
 const app = createApp(() => {
   return (
     <>
-      <div>Count: {store.state.count}</div>
+      <div>Count: {store.count} * 2 = {store.computedCount}</div>
       <div id="nav">
         <RouterLink to="/">JSX</RouterLink> | <RouterLink to="/sfc">SFC</RouterLink>
       </div>
