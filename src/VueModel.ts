@@ -22,10 +22,10 @@ interface IVueModelAdapter {
   getters: any
   createState<T extends object> (target: { $$state: T }, getters?: GettersTree<T>): any
   watch<T extends object>(source: T, cb: (value: T, ...args: any[]) => any, options?: {
-    immediate?: boolean;
-    deep?: boolean;
+    immediate?: boolean
+    deep?: boolean
     [x: string]: any
-  }): () => void;
+  }): () => void
 }
 
 /** @public */
@@ -33,14 +33,14 @@ export interface IVue {
   reactive?: Function
   computed?: Function
   watch?: Function
-  extend?: (options: any) => { new (): { $watch: Function; [x: string]: any } }
+  extend?: (options: any) => new () => { $watch: Function; _data: any; [x: string]: any }
   [x: string]: any
 }
 
 class VueAdapter implements IVueModelAdapter {
-  private __Vue: IVue
-  private __vm: null | { $watch: Function }
-  
+  private readonly __Vue: IVue
+  private __vm: null | { $watch: Function; _data: any }
+
   public getters: any = Object.create(null)
 
   public constructor (Vue: IVue) {
@@ -65,6 +65,25 @@ class VueAdapter implements IVueModelAdapter {
       return proxy
     }
     const computed: any = {}
+
+    if (getters) {
+      const getterKeys = Object.keys(getters)
+      for (let i = 0; i < getterKeys.length; i++) {
+        const key = getterKeys[i]
+        computed[key] = (function () {
+          return function (this: { _data: { $$state: T } }) {
+            return getters[key](this._data.$$state)
+          }
+        })()
+        Object.defineProperty(this.getters, key, {
+          get: () => {
+            return (this.__vm as any)[key]
+          },
+          enumerable: true
+        })
+      }
+    }
+
     const VueExtended = this.__Vue.extend!({
       data () {
         return target
@@ -73,24 +92,12 @@ class VueAdapter implements IVueModelAdapter {
     })
     this.__vm = new VueExtended()
 
-    if (getters) {
-      const getterKeys = Object.keys(getters)
-      for (let i = 0; i < getterKeys.length; i++) {
-        const key = getterKeys[i]
-        computed[key] = partial<T>(getters[key], this.__vm as T)
-        Object.defineProperty(this.getters, key, {
-          get: () => (this.__vm as any)[key],
-          enumerable: true
-        })
-      }
-    }
-
-    return this.__vm
+    return this.__vm._data
   }
 
   public watch<T extends object>(source: T, cb: (value: T, ...args: any[]) => any, options?: {
-    immediate?: boolean;
-    deep?: boolean;
+    immediate?: boolean
+    deep?: boolean
     [x: string]: any
   }): () => void {
     if (typeof this.__Vue.watch === 'function') {
@@ -101,22 +108,22 @@ class VueAdapter implements IVueModelAdapter {
   }
 }
 
-function partial<T> (fn: (arg: T) => any, arg: T): () => any {
-  return function () {
-    return fn(arg)
-  }
-}
+// function partial<T> (fn: (arg: T) => any, arg: T): () => any {
+//   return function () {
+//     return fn(arg)
+//   }
+// }
 
 /** @public */
 export interface VueModelOptions<S extends object, G extends GettersTree<S>> {
-  state: S,
+  state: S
   getters?: G
 }
 
 /** @public */
 export class VueModel<S extends object, G extends GettersTree<S>> implements IVueModel<S, G> {
   public static extend (Vue: IVue): new<S extends object, G extends GettersTree<S>> (options: VueModelOptions<S, G>) => IVueModel<S, G> {
-    return class<S extends object, G extends GettersTree<S>> extends VueModel<S, G> {
+    return class <S extends object, G extends GettersTree<S>> extends VueModel<S, G> {
       public constructor (options: VueModelOptions<S, G>) {
         super(Vue, options)
       }
@@ -129,12 +136,12 @@ export class VueModel<S extends object, G extends GettersTree<S>> implements IVu
 
   protected _state: { $$state: S }
 
-  private __subscribers: Array<Subscriber<S>>
+  private readonly __subscribers: Array<Subscriber<S>>
 
   // @ts-expect-error
   private __watchStopHandle: null | (() => void)
 
-  private __adapter: IVueModelAdapter
+  private readonly __adapter: IVueModelAdapter
 
   public constructor (Vue: IVue, options: VueModelOptions<S, G>) {
     const { state, getters } = options
@@ -154,8 +161,9 @@ export class VueModel<S extends object, G extends GettersTree<S>> implements IVu
 
   public subscribe (fn: Subscriber<S>, options?: SubscribeOptions): () => void {
     const oldLength = this.__subscribers.length
+    // eslint-disable-next-line @typescript-eslint/prefer-includes
     if (this.__subscribers.indexOf(fn) < 0) {
-      if (options && options.prepend) {
+      if (options?.prepend) {
         this.__subscribers.unshift(fn)
       } else {
         this.__subscribers.push(fn)
