@@ -15,79 +15,53 @@
 //   }
 // })
 
-import { reactive, UnwrapRef, computed, ComputedRef, App, InjectionKey, watch } from 'vue'
+import * as Vue from 'vue'
+import { VueModel, IVueModel, SubscribeOptions, Subscriber } from './VueModel'
 
-type Subscriber<S extends object> = (state: S) => void
-
-interface SubscribeOptions {
-  prepend?: boolean
+interface State {
+  a: { count: number }
 }
 
-class BaseStore<S extends object> {
-  protected _state: UnwrapRef<S>
-
-  private __subscribers: Array<Subscriber<S>>
-
-  protected constructor (state: S) {
-    this._state = reactive(state) as UnwrapRef<S>
-    this.__subscribers = []
-
-    watch(this._state, (value) => {
-      this.__subscribers.slice().forEach(sub => { sub(value as S) })
-    }, {
-      deep: true
-    })
+class Store implements IVueModel<State, any> {
+  public get state () {
+    return this.__model.state
   }
 
-  public get state (): UnwrapRef<S> {
-    return this._state
+  public get getters () {
+    return this.__model.getters
   }
 
-  public subscribe (fn: Subscriber<S>, options?: SubscribeOptions): () => void {
-    if (this.__subscribers.indexOf(fn) < 0) {
-      if (options && options.prepend) {
-        this.__subscribers.unshift(fn)
-      } else {
-        this.__subscribers.push(fn)
-      }
-    }
-    return () => {
-      const i = this.__subscribers.indexOf(fn)
-      if (i > -1) {
-        this.__subscribers.splice(i, 1)
-      }
-    }
+  public subscribe(fn: Subscriber<State>, options?: SubscribeOptions): () => void {
+    return this.__model.subscribe(fn, options)
   }
 
-  /** @virtual */
-  public install (_app: App, _injectKey?: InjectionKey<any>): void {
-    // app.provide(injectKey || BaseStore.__storeKey, this)
-    // app.config.globalProperties.$store = this
-  }
-}
-
-class Store extends BaseStore<{ a: { count: number } }> {
-  private _computedCount: ComputedRef<number>
-  public constructor () {
-    super({
+  private __model = VueModel.create(Vue, {
+    state: {
       a: { count: 1 }
-    })
-
-    this._computedCount = computed(() => this.state.a.count * 2)
-  }
+    },
+    getters: {
+      computedCount (state): number {
+        return state.a.count * 2
+      }
+    }
+  })
 
   public get count (): number {
     return this.state.a.count
   }
 
   public get computedCount (): number {
-    return this._computedCount.value
+    return this.getters.computedCount
   }
 
   public add () {
     return Promise.resolve().then(() => {
       this.state.a.count++
     })
+  }
+
+  public install (app: Vue.App) {
+    console.log(app)
   }
 }
 
