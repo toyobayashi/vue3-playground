@@ -16,7 +16,7 @@
 // })
 
 import * as Vue from 'vue'
-import { VueModel, IVueModel, SubscribeOptions, Subscriber } from './VueModel'
+import { VueModel, IVueModel, ISubscribeOptions, Subscriber } from '@tybys/vuemodel'
 
 interface State {
   a: { count: number }
@@ -31,7 +31,7 @@ class Store implements IVueModel<State, any> {
     return this.__model.getters
   }
 
-  public subscribe(fn: Subscriber<State>, options?: SubscribeOptions): () => void {
+  public subscribe(fn: Subscriber<State>, options?: ISubscribeOptions): () => void {
     return this.__model.subscribe(fn, options)
   }
 
