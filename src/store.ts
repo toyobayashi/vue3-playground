@@ -16,35 +16,35 @@
 // })
 
 import * as Vue from 'vue'
-import { VueModel, IVueModel, ISubscribeOptions, Subscriber } from '@tybys/vuemodel'
+import { createLogger, IAction, Store } from '@tybys/vuemodel'
 
 interface State {
   a: { count: number }
 }
 
-class Store implements IVueModel<State, any> {
-  public get state () {
-    return this.__model.state
+const getters = {
+  computedCount (state: State): number {
+    return state.a.count * 2
   }
+}
 
-  public get getters () {
-    return this.__model.getters
+class MyStore extends Store<State, typeof getters> {
+  private __addAction: IAction<number, void>
+  public constructor () {
+    super(Vue, {
+      state: {
+        a: { count: 1 }
+      },
+      getters,
+      devtools: false,
+      plugins: [
+        createLogger({ collapsed: false })
+      ]
+    })
+    this.__addAction = this.registerAction('a_add', (n: number) => {
+      this.state.a.count += n
+    })
   }
-
-  public subscribe(fn: Subscriber<State>, options?: ISubscribeOptions): () => void {
-    return this.__model.subscribe(fn, options)
-  }
-
-  private __model = VueModel.create(Vue, {
-    state: {
-      a: { count: 1 }
-    },
-    getters: {
-      computedCount (state): number {
-        return state.a.count * 2
-      }
-    }
-  })
 
   public get count (): number {
     return this.state.a.count
@@ -55,9 +55,7 @@ class Store implements IVueModel<State, any> {
   }
 
   public add () {
-    return Promise.resolve().then(() => {
-      this.state.a.count++
-    })
+    return this.dispatch(this.__addAction, 1)
   }
 
   public install (app: Vue.App) {
@@ -65,9 +63,6 @@ class Store implements IVueModel<State, any> {
   }
 }
 
-const store = new Store()
-store.subscribe((state) => {
-  console.log(state)
-})
+const store = new MyStore()
 
 export default store
