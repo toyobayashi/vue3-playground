@@ -12,11 +12,22 @@ interface RouterViewDefaultSlotScope {
 export default defineComponent(function () {
   const store = useMainStore()
 
+  const add = () => {
+    const store = useMainStore()
+    store.add(1)
+  }
+
+  const sub = () => {
+    const store = useMainStore()
+    store.sub(1)
+  }
+
   return () => {
     return (
       <>
         <div>Count: {store.count} * 2 = {store.computedCount}</div>
-        <div id="nav">
+        <div><button onClick={add}>ADD</button><button onClick={sub}>SUB</button></div>
+        <div>
           <RouterLink to="/temperature">Temperature</RouterLink> | <RouterLink to="/yen">Yen</RouterLink>
         </div>
         <RouterView

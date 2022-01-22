@@ -6,7 +6,7 @@ const store = useMainStore()
 
 <template>
   <div>Count: {{store.count}} * 2 = {{store.computedCount}}</div>
-  <div id="nav">
+  <div>
     <RouterLink to="/temperature">Temperature</RouterLink> | <RouterLink to="/yen">Yen</RouterLink>
   </div>
   <RouterView v-slot="{ Component }">
