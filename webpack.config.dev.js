@@ -1,4 +1,4 @@
-// @tybys/ty version 0.16.3
+// @tybys/ty version 1.0.0-alpha.4
 // https://github.com/toyobayashi/ty
 
 // _useVue: true
@@ -10,9 +10,11 @@
 // _useSass: false
 // _useStylus: false
 // _useLess: false
+// _useBabel: true
+// _useVueJsx: true
+// _useBabelToTransformTypescript: false
 // _useTypeScript: true
 // _useESLint: false
-// _useBabel: true
 // _usePostCss: false
 const path = require('path')
 const webpack = require('webpack')
@@ -50,7 +52,7 @@ const webConfig = {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.(m|c)?jsx?$/,
         exclude: /node_modules/,
         use: [
           {
@@ -121,65 +123,31 @@ const webConfig = {
       },
       {
         test: /\.(png|jpe?g|gif|webp)(\?.*)?$/,
-        use: [
-          {
-            loader: require.resolve('url-loader'),
-            options: {
-              limit: 4096,
-              fallback: {
-                loader: require.resolve('file-loader'),
-                options: {
-                  name: 'img/[name].[ext]'
-                }
-              }
-            }
-          }
-        ]
+        type: 'asset',
+        generator: {
+          filename: 'img/[name].[ext]'
+        }
       },
       {
         test: /\.(svg)(\?.*)?$/,
-        use: [
-          {
-            loader: require.resolve('file-loader'),
-            options: {
-              name: 'img/[name].[ext]'
-            }
-          }
-        ]
+        type: 'asset/resource',
+        generator: {
+          filename: 'img/[name].[ext]'
+        }
       },
       {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-        use: [
-          {
-            loader: require.resolve('url-loader'),
-            options: {
-              limit: 4096,
-              fallback: {
-                loader: require.resolve('file-loader'),
-                options: {
-                  name: 'media/[name].[ext]'
-                }
-              }
-            }
-          }
-        ]
+        type: 'asset',
+        generator: {
+          filename: 'media/[name].[ext]'
+        }
       },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/i,
-        use: [
-          {
-            loader: require.resolve('url-loader'),
-            options: {
-              limit: 4096,
-              fallback: {
-                loader: require.resolve('file-loader'),
-                options: {
-                  name: 'fonts/[name].[ext]'
-                }
-              }
-            }
-          }
-        ]
+        type: 'asset',
+        generator: {
+          filename: 'fonts/[name].[ext]'
+        }
       }
     ]
   },
@@ -233,60 +201,34 @@ const webConfig = {
       ]
     }),
     new webpack.DefinePlugin({
-      __classPrivateFieldGet: [
-        'tslib',
-        '__classPrivateFieldGet'
-      ],
-      __classPrivateFieldSet: [
-        'tslib',
-        '__classPrivateFieldSet'
-      ],
       __VUE_OPTIONS_API__: 'false',
       __VUE_PROD_DEVTOOLS__: 'false'
     }),
     new VueLoaderPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
     new ForkTsCheckerWebpackPlugin({
       typescript: {
-        configFile: path.join(context, 'tsconfig.json'),
-        extensions: {
-          vue: false
-        }
+        configFile: path.join(context, 'tsconfig.json')
       }
     })
   ],
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-      name: false,
-      cacheGroups: {
-        node_modules: {
-          name: 'node-modules',
-          test: /[\\/]node_modules[\\/]/,
-          priority: -9,
-          chunks: 'all'
-        }
-      }
-    }
+  stats: {
+    colors: true,
+    children: false,
+    modules: false,
+    entrypoints: false
   },
   devServer: {
-    stats: {
-      colors: true,
-      children: false,
-      modules: false,
-      entrypoints: false
-    },
-    hot: true,
     host: 'localhost',
-    inline: true,
+    port: 8090,
     open: false,
-    contentBase: [
-      path.join(context, 'dist')
-    ],
-    publicPath: '/',
+    'static': path.join(context, 'dist'),
+    devMiddleware: {
+      publicPath: '/'
+    },
     proxy: {},
-    before: (_app, server) => {
-      htmls.forEach(item => server._watch(item))
+    setupMiddlewares: (middlewares, server) => {
+      server.watchFiles(htmls)
+      return middlewares
     }
   },
   devtool: 'eval-source-map'
