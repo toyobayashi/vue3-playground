@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import Temperature from '@/components/Temperature.vue'
+import Temperature from '@/components/Temperature'
 
 const routes: Array<RouteRecordRaw> = [
   {

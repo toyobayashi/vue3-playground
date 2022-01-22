@@ -3,8 +3,8 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "serve": "ty serve",
-    "build": "ty build"
+    "serve": "webpack serve --config ./webpack.config.dev.js",
+    "build": "webpack --config ./webpack.config.prod.js"
   },
   "devDependencies": {
     "@babel/core": "^7.16.10",

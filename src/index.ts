@@ -7,9 +7,3 @@ import App from './App'
 const app = createApp(App)
 app.use(pinia)
 app.use(router).mount('#app')
-
-// @ts-ignore
-if (module.hot) {
-  // @ts-ignore
-  module.hot.accept()
-}
