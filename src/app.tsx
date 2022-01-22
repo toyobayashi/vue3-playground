@@ -17,7 +17,7 @@ export default defineComponent(function () {
       <>
         <div>Count: {store.count} * 2 = {store.computedCount}</div>
         <div id="nav">
-          <RouterLink to="/">JSX</RouterLink> | <RouterLink to="/sfc">SFC</RouterLink>
+          <RouterLink to="/temperature">Temperature</RouterLink> | <RouterLink to="/yen">Yen</RouterLink>
         </div>
         <RouterView
           v-slots={{

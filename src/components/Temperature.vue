@@ -1,0 +1,18 @@
+<script setup lang="ts">
+import { useConverter } from '@/composables/converter'
+
+const {
+  left: c,
+  right: f,
+  onLeftChange: setC,
+  onRightChange: setF
+} = useConverter(
+  v => v * (9 / 5) + 32,
+  v => (v - 32) * (5 / 9)
+)
+</script>
+
+<template>
+  <input type="number" :value="c" @change="setC"> 摄氏度 =
+  <input type="number" :value="f" @change="setF"> 华氏度
+</template>
