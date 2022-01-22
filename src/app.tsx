@@ -1,22 +1,32 @@
-import {
-  defineComponent
-} from 'vue'
+import { defineComponent, KeepAlive } from 'vue'
+import type { DefineComponent } from 'vue'
+import { RouterLink, RouterView } from 'vue-router'
+import type { RouteLocation } from 'vue-router'
+import { useMainStore } from '@/stores/index'
 
-import { useTextInput } from './hooks'
+interface RouterViewDefaultSlotScope {
+  route: RouteLocation
+  Component: DefineComponent<{}, {}, any> | undefined
+}
 
-export default defineComponent({
-  name: 'App',
-  setup () {
-    const {
-      inputValue,
-      log
-    } = useTextInput('JSX')
-    return () => {
-      console.log('App render')
-      return (<>
-        <input type="text" v-model={inputValue.value} />
-        <p onClick={log}>{inputValue.value}</p>
-      </>)
-    }
+export default defineComponent(function () {
+  const store = useMainStore()
+
+  return () => {
+    return (
+      <>
+        <div>Count: {store.count} * 2 = {store.computedCount}</div>
+        <div id="nav">
+          <RouterLink to="/">JSX</RouterLink> | <RouterLink to="/sfc">SFC</RouterLink>
+        </div>
+        <RouterView
+          v-slots={{
+            default: (slotProps: RouterViewDefaultSlotScope) => {
+              const { Component } = slotProps
+              return <KeepAlive>{Component ? <Component /> : null}</KeepAlive>
+            }
+          }} />
+      </>
+    )
   }
 })

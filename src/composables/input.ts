@@ -1,16 +1,15 @@
 import { ref } from 'vue'
-import store from './store'
+import { useMainStore } from '@/stores/index'
 
 export function useTextInput (defaultValue?: string) {
+  const store = useMainStore()
   const inputValue = ref(defaultValue ?? '')
-  const log = () => {
-    console.log(inputValue.value)
-    // store.commit('COUNT')
-    store.add()
+  const add = () => {
+    store.add(Number(inputValue.value) || 0)
   }
 
   return {
     inputValue,
-    log
+    add
   }
 }

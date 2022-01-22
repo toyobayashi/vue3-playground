@@ -1,17 +1,22 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import AppJsx from './app'
+import { defineAsyncComponent } from 'vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
+    name: 'home',
+    redirect: { name: 'jsx' }
+  },
+  {
+    path: '/jsx',
     name: 'jsx',
-    component: AppJsx
+    component: defineAsyncComponent(() => import(/* webpackChunkName: "jsx" */ '@/components/JSX'))
   },
   {
     path: '/sfc',
     name: 'sfc',
-    component: () => import(/* webpackChunkName: "sfc" */ './App.vue')
+    component: () => import(/* webpackChunkName: "sfc" */ '@/components/SFC.vue')
   }
 ]
 
