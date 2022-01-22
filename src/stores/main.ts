@@ -12,6 +12,9 @@ export const useMainStore = defineStore('main', {
   actions: {
     add (value: number) {
       this.count += value
+    },
+    sub (value: number) {
+      this.count -= value
     }
   }
 })
