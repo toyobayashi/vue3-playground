@@ -7,15 +7,15 @@
 // _webTarget: true
 // _nodeTarget: false
 // _extractCss: false
-// _useSass: false
+// _useSass: true
 // _useStylus: false
 // _useLess: false
 // _useBabel: true
 // _useVueJsx: true
 // _useBabelToTransformTypescript: false
 // _useTypeScript: true
-// _useESLint: false
-// _usePostCss: false
+// _useESLint: true
+// _usePostCss: true
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -39,7 +39,7 @@ const webConfig = {
     environment: {
       arrowFunction: false,
       bigIntLiteral: false,
-      'const': false,
+      const: false,
       destructuring: false,
       dynamicImport: false,
       forOf: false,
@@ -116,8 +116,38 @@ const webConfig = {
                 auto: true,
                 localIdentName: '[path][name]__[local]'
               },
-              importLoaders: 0
+              importLoaders: 1
             }
+          },
+          {
+            loader: require.resolve('postcss-loader'),
+            options: {}
+          }
+        ]
+      },
+      {
+        test: /\.s[ac]ss$/i,
+        use: [
+          {
+            loader: require.resolve('style-loader')
+          },
+          {
+            loader: require.resolve('css-loader'),
+            options: {
+              modules: {
+                auto: true,
+                localIdentName: '[path][name]__[local]'
+              },
+              importLoaders: 2
+            }
+          },
+          {
+            loader: require.resolve('postcss-loader'),
+            options: {}
+          },
+          {
+            loader: require.resolve('sass-loader'),
+            options: {}
           }
         ]
       },
@@ -163,6 +193,8 @@ const webConfig = {
       '.js',
       '.jsx',
       '.vue',
+      '.scss',
+      '.sass',
       '.css',
       '.json',
       '.wasm'
@@ -221,7 +253,7 @@ const webConfig = {
     host: 'localhost',
     port: 8090,
     open: false,
-    'static': path.join(context, 'dist'),
+    static: path.join(context, 'dist'),
     devMiddleware: {
       publicPath: '/'
     },

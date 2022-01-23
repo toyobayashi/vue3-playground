@@ -1,8 +1,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import type { Component } from 'vue'
 import Temperature from '@/components/Temperature'
 
-const routes: Array<RouteRecordRaw> = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
@@ -16,7 +17,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/yen',
     name: 'yen',
-    component: () => import(/* webpackChunkName: "yen" */ '@/components/Yen.vue')
+    component: (): Promise<Component> => import(/* webpackChunkName: "yen" */ '@/components/Yen.vue')
   }
 ]
 

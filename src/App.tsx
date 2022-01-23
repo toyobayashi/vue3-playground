@@ -12,12 +12,12 @@ interface RouterViewDefaultSlotScope {
 export default defineComponent(function () {
   const store = useMainStore()
 
-  const add = () => {
+  const add = (): void => {
     const store = useMainStore()
     store.add(1)
   }
 
-  const sub = () => {
+  const sub = (): void => {
     const store = useMainStore()
     store.sub(1)
   }
